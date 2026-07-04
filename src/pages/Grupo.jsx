@@ -60,12 +60,26 @@ export default function Grupo() {
                   {t.criterios?.length ?? 0} criterios · IA: {t.config_ia?.modo ?? 'desactivado'}
                 </p>
               </div>
-              <button
-                onClick={() => navigate(`/tareas/${t.id}/subir`)}
-                className="text-sm text-brand border border-brand px-3 py-1.5 rounded-lg hover:bg-brand hover:text-white transition-colors"
-              >
-                Subir tareas
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate(`/tareas/${t.id}/subir`)}
+                  className="text-sm text-brand border border-brand px-3 py-1.5 rounded-lg hover:bg-brand hover:text-white transition-colors"
+                >
+                  Subir tareas
+                </button>
+                <button
+                  onClick={() => navigate(`/tareas/${t.id}/revision`)}
+                  className="text-sm text-white bg-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Iniciar revisión
+                </button>
+                <button
+                  onClick={() => navigate(`/tareas/${t.id}/resultados`)}
+                  className="text-sm text-gray-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  Ver resultados
+                </button>
+              </div>
             </div>
           ))}
         </div>
