@@ -34,9 +34,17 @@ export default function DetalleAlumno() {
 
   return (
     <Layout>
-      <button onClick={() => navigate(-1)} className="text-sm text-brand hover:underline mb-4 inline-block">
-        ← Volver a resultados
-      </button>
+      <div className="flex items-center justify-between mb-4 print:hidden">
+        <button onClick={() => navigate(-1)} className="text-sm text-brand hover:underline">
+          ← Volver a resultados
+        </button>
+        <button
+          onClick={() => window.print()}
+          className="text-sm text-gray-600 border border-gray-300 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          🖨 Exportar detalle PDF
+        </button>
+      </div>
 
       {/* Header */}
       <div className="bg-white border border-gray-200 rounded-2xl p-6 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
