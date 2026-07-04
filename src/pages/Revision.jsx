@@ -1,16 +1,19 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import Layout from '../components/Layout'
+import Toast from '../components/Toast'
 import { iniciarRevision, getStatus } from '../api/revision'
 
 export default function Revision() {
   const { tareaId } = useParams()
   const navigate = useNavigate()
   const started = useRef(false)
+  const [toastMsg, setToastMsg] = useState('')
 
   const { mutate: startRevision } = useMutation({
     mutationFn: () => iniciarRevision(tareaId),
+    onError: () => setToastMsg('No se pudo iniciar la revisión. Verifica tu conexión.'),
   })
 
   useEffect(() => {
@@ -20,7 +23,7 @@ export default function Revision() {
     }
   }, [startRevision])
 
-  const { data } = useQuery({
+  const { data, refetch } = useQuery({
     queryKey: ['revision-status', tareaId],
     queryFn: () => getStatus(tareaId),
     refetchInterval: (query) => {
@@ -38,21 +41,31 @@ export default function Revision() {
 
   useEffect(() => {
     if (done) {
+      // 1s delay on success, 3s on errors so user sees the warning
+      const delay = status === 'con_errores' ? 3000 : 1000
       const timer = setTimeout(() => {
         navigate(`/tareas/${tareaId}/resultados`)
-      }, 1000)
+      }, delay)
       return () => clearTimeout(timer)
     }
-  }, [done, navigate, tareaId])
+  }, [done, status, navigate, tareaId])
 
   return (
     <Layout>
+      {toastMsg && (
+        <Toast
+          message={toastMsg}
+          onRetry={() => { setToastMsg(''); startRevision() }}
+          onClose={() => setToastMsg('')}
+        />
+      )}
+
       <div className="max-w-lg mx-auto mt-16 text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Revisando entregas</h2>
 
         {status === 'con_errores' && (
           <div className="mb-4 bg-yellow-50 border border-yellow-300 text-yellow-800 text-sm rounded-lg px-4 py-3">
-            Algunas entregas tuvieron errores. Revisa los resultados para más detalle.
+            Algunas entregas tuvieron errores. Revisa el detalle en los resultados.
           </div>
         )}
 

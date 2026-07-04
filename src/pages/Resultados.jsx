@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import Layout from '../components/Layout'
+import Toast from '../components/Toast'
 import { getResultados, exportarExcel } from '../api/revision'
 
 const NIVEL_BADGE = {
@@ -15,10 +16,12 @@ export default function Resultados() {
   const navigate = useNavigate()
   const [sortAsc, setSortAsc] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [toastMsg, setToastMsg] = useState('')
 
-  const { data: resultados = [], isLoading } = useQuery({
+  const { data: resultados = [], isLoading, refetch } = useQuery({
     queryKey: ['resultados', tareaId],
     queryFn: () => getResultados(tareaId),
+    onError: () => setToastMsg('Error al cargar los resultados.'),
   })
 
   const sorted = [...resultados].sort((a, b) =>
@@ -31,6 +34,8 @@ export default function Resultados() {
     setExporting(true)
     try {
       await exportarExcel(tareaId)
+    } catch {
+      setToastMsg('Error al exportar el Excel. Intenta de nuevo.')
     } finally {
       setExporting(false)
     }
@@ -38,6 +43,14 @@ export default function Resultados() {
 
   return (
     <Layout>
+      {toastMsg && (
+        <Toast
+          message={toastMsg}
+          onRetry={() => { setToastMsg(''); refetch() }}
+          onClose={() => setToastMsg('')}
+        />
+      )}
+
       <div className="mb-6 flex items-center justify-between">
         <div>
           <button onClick={() => navigate(-1)} className="text-sm text-brand hover:underline mb-1 inline-block">
@@ -77,7 +90,10 @@ export default function Resultados() {
               {sorted.map((row) => (
                 <tr
                   key={row.entrega_id}
-                  className={`border-b border-gray-100 last:border-0 ${row.status === 'error' ? 'bg-red-50' : 'hover:bg-gray-50'}`}
+                  title={row.status === 'error' ? 'Hubo un error al revisar esta tarea' : undefined}
+                  className={`border-b border-gray-100 last:border-0 ${
+                    row.status === 'error' ? 'bg-[#FFF0F0]' : 'hover:bg-gray-50'
+                  }`}
                 >
                   <td className="px-4 py-3 font-medium text-gray-900">{row.alumno}</td>
                   <td className="px-4 py-3 text-gray-700">
@@ -100,14 +116,13 @@ export default function Resultados() {
                     ) : '—'}
                   </td>
                   <td className="px-4 py-3">
-                    {row.status !== 'error' && (
-                      <button
-                        onClick={() => navigate(`/entregas/${row.entrega_id}/detalle`)}
-                        className="text-brand text-xs font-medium hover:underline"
-                      >
-                        Ver detalle
-                      </button>
-                    )}
+                    <button
+                      onClick={() => row.status !== 'error' && navigate(`/entregas/${row.entrega_id}/detalle`)}
+                      disabled={row.status === 'error'}
+                      className="text-brand text-xs font-medium hover:underline disabled:opacity-40 disabled:cursor-not-allowed disabled:no-underline"
+                    >
+                      Ver detalle
+                    </button>
                   </td>
                 </tr>
               ))}

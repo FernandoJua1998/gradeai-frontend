@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Grupo from './pages/Grupo'
@@ -7,6 +7,7 @@ import SubirTareas from './pages/SubirTareas'
 import Revision from './pages/Revision'
 import Resultados from './pages/Resultados'
 import DetalleAlumno from './pages/DetalleAlumno'
+import NotFound from './pages/NotFound'
 import ProtectedRoute from './components/ProtectedRoute'
 
 function Protected({ children }) {
@@ -24,7 +25,7 @@ export default function App() {
       <Route path="/tareas/:tareaId/revision" element={<Protected><Revision /></Protected>} />
       <Route path="/tareas/:tareaId/resultados" element={<Protected><Resultados /></Protected>} />
       <Route path="/entregas/:entregaId/detalle" element={<Protected><DetalleAlumno /></Protected>} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   )
 }
