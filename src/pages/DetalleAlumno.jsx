@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import Layout from '../components/Layout'
+import LoadingSpinner from '../components/LoadingSpinner'
 import { getDetalleAlumno } from '../api/revision'
 
 const NIVEL_BADGE = {
@@ -25,7 +26,7 @@ export default function DetalleAlumno() {
   })
 
   if (isLoading) {
-    return <Layout><p className="text-gray-400 text-sm">Cargando detalle...</p></Layout>
+    return <Layout><LoadingSpinner message="Cargando detalle del alumno..." /></Layout>
   }
 
   if (isError || !data) {

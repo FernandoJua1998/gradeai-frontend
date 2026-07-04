@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import Layout from '../components/Layout'
+import LoadingSpinner from '../components/LoadingSpinner'
 import { getGrupo } from '../api/grupos'
 import { getTareas } from '../api/tareas'
 import { getStatus } from '../api/revision'
@@ -43,7 +44,7 @@ export default function Grupo() {
   })
 
   if (loadingGrupo) {
-    return <Layout><p className="text-gray-400 text-sm">Cargando...</p></Layout>
+    return <Layout><LoadingSpinner message="Cargando grupo..." /></Layout>
   }
 
   return (
