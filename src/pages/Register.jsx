@@ -40,7 +40,7 @@ export default function Register() {
 
     setLoading(true)
     try {
-      const { access_token, usuario } = await register({ nombre, email, password })
+      const { access_token, usuario } = await register({ nombre, email, password, confirmar_password: confirmPassword })
       setAuth(access_token, usuario)
       navigate('/')
     } catch (err) {
