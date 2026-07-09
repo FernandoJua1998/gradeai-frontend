@@ -150,7 +150,9 @@ export default function AdminPanel() {
   const handleToggle = async (userId) => {
     try {
       await toggleUsuarioStatus(userId)
-      await cargarDatos()
+      setUsuarios(prev => prev.map(u =>
+        u.id === userId ? { ...u, is_active: !u.is_active } : u
+      ))
     } catch {
       alert('Error al cambiar el estado del usuario.')
     }
@@ -235,15 +237,15 @@ export default function AdminPanel() {
                           <RoleBadge role={u.role} />
                         </td>
                         <td className="px-4 py-3">
-                          <StatusBadge activo={u.activo !== false} />
+                          <StatusBadge activo={u.is_active !== false} />
                         </td>
                         <td className="px-4 py-3 text-right text-gray-700">{u.total_tareas ?? '—'}</td>
                         <td className="px-4 py-3 text-right text-gray-700">{u.total_entregas ?? '—'}</td>
                         <td className="px-4 py-3 text-right text-gray-700">
-                          {u.total_tokens != null ? u.total_tokens.toLocaleString() : '—'}
+                          {u.tokens_consumidos != null ? u.tokens_consumidos.toLocaleString() : '—'}
                         </td>
                         <td className="px-4 py-3 text-right text-gray-700">
-                          {u.costo_total != null ? `$${Number(u.costo_total).toFixed(6)}` : '—'}
+                          {u.costo_estimado != null ? `$${Number(u.costo_estimado).toFixed(6)}` : '—'}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
@@ -257,7 +259,7 @@ export default function AdminPanel() {
                               onClick={() => handleToggle(u.id)}
                               className="text-xs bg-gray-50 text-gray-700 hover:bg-gray-100 px-2 py-1 rounded transition-colors"
                             >
-                              {u.activo !== false ? 'Desactivar' : 'Activar'}
+                              {u.is_active !== false ? 'Desactivar' : 'Activar'}
                             </button>
                             <button
                               onClick={() => handleEliminar(u)}
