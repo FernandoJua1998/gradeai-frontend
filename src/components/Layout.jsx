@@ -19,6 +19,14 @@ export default function Layout({ children }) {
             {user && (
               <span className="text-blue-100 text-sm">{user.nombre}</span>
             )}
+            {user?.role === 'admin' && (
+              <Link
+                to="/admin"
+                className="text-sm text-white bg-brand-dark hover:bg-brand-light px-3 py-1.5 rounded transition-colors"
+              >
+                Admin
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="text-sm text-white bg-brand-dark hover:bg-brand-light px-3 py-1.5 rounded transition-colors"

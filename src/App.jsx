@@ -9,9 +9,15 @@ import Revision from './pages/Revision'
 import Resultados from './pages/Resultados'
 import DetalleAlumno from './pages/DetalleAlumno'
 import ProtectedRoute from './components/ProtectedRoute'
+import AdminRoute from './components/AdminRoute'
+import AdminPanel from './pages/admin/AdminPanel'
 
 function Protected({ children }) {
   return <ProtectedRoute>{children}</ProtectedRoute>
+}
+
+function Admin({ children }) {
+  return <AdminRoute>{children}</AdminRoute>
 }
 
 export default function App() {
@@ -26,6 +32,7 @@ export default function App() {
       <Route path="/tareas/:tareaId/revision" element={<Protected><Revision /></Protected>} />
       <Route path="/tareas/:tareaId/resultados" element={<Protected><Resultados /></Protected>} />
       <Route path="/entregas/:entregaId/detalle" element={<Protected><DetalleAlumno /></Protected>} />
+      <Route path="/admin" element={<Admin><AdminPanel /></Admin>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )

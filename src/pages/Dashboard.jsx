@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Layout from '../components/Layout'
 import { getGrupos, createGrupo } from '../api/grupos'
+import { getMisStats } from '../api/admin'
 
 function GrupoCard({ grupo, onClick }) {
   return (
@@ -65,10 +66,26 @@ function ModalCrearGrupo({ onClose, onCreate }) {
   )
 }
 
+function MisStatsCard({ label, value }) {
+  return (
+    <div style={{ background: '#E8F4FD' }} className="rounded-xl p-5 border border-blue-100">
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-2xl font-bold mt-1" style={{ color: '#1B4F8A' }}>{value ?? '—'}</p>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
+  const [misStats, setMisStats] = useState(null)
+
+  useEffect(() => {
+    getMisStats()
+      .then((res) => setMisStats(res.data))
+      .catch(() => setMisStats(null))
+  }, [])
 
   const { data: grupos = [], isLoading } = useQuery({
     queryKey: ['grupos'],
@@ -85,6 +102,20 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      {/* Mis estadísticas */}
+      <div className="mb-8">
+        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Mis estadísticas</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MisStatsCard label="Total tareas" value={misStats?.total_tareas} />
+          <MisStatsCard label="Total entregas" value={misStats?.total_entregas} />
+          <MisStatsCard label="Tokens consumidos" value={misStats?.total_tokens != null ? misStats.total_tokens.toLocaleString() : null} />
+          <MisStatsCard
+            label="Costo estimado (USD)"
+            value={misStats?.costo_total != null ? `$${Number(misStats.costo_total).toFixed(6)}` : null}
+          />
+        </div>
+      </div>
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Mis grupos</h2>
