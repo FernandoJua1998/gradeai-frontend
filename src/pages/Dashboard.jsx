@@ -84,7 +84,7 @@ export default function Dashboard() {
   useEffect(() => {
     getMisStats()
       .then((res) => setMisStats(res.data))
-      .catch(() => setMisStats(null))
+      .catch(() => setMisStats({ total_tareas: 0, total_entregas: 0, tokens_consumidos: 0, costo_estimado: 0 }))
   }, [])
 
   const { data: grupos = [], isLoading } = useQuery({
@@ -106,12 +106,12 @@ export default function Dashboard() {
       <div className="mb-8">
         <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Mis estadísticas</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MisStatsCard label="Total tareas" value={misStats?.total_tareas} />
-          <MisStatsCard label="Total entregas" value={misStats?.total_entregas} />
-          <MisStatsCard label="Tokens consumidos" value={misStats?.total_tokens != null ? misStats.total_tokens.toLocaleString() : null} />
+          <MisStatsCard label="Total tareas" value={misStats?.total_tareas ?? 0} />
+          <MisStatsCard label="Total entregas" value={misStats?.total_entregas ?? 0} />
+          <MisStatsCard label="Tokens consumidos" value={misStats?.tokens_consumidos != null ? misStats.tokens_consumidos.toLocaleString() : 0} />
           <MisStatsCard
             label="Costo estimado (USD)"
-            value={misStats?.costo_total != null ? `$${Number(misStats.costo_total).toFixed(6)}` : null}
+            value={misStats?.costo_estimado != null ? `$${Number(misStats.costo_estimado).toFixed(6)}` : '$0.000000'}
           />
         </div>
       </div>

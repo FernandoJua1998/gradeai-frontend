@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import { register } from '../api/auth'
+import { register, getMe } from '../api/auth'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -40,8 +40,10 @@ export default function Register() {
 
     setLoading(true)
     try {
-      const { access_token, usuario } = await register({ nombre, email, password, confirmar_password: confirmPassword })
-      setAuth(access_token, usuario)
+      const { access_token } = await register({ nombre, email, password, confirmar_password: confirmPassword })
+      useAuthStore.setState({ token: access_token })
+      const user = await getMe()
+      setAuth(access_token, user)
       navigate('/')
     } catch (err) {
       const detail = err?.response?.data?.detail
