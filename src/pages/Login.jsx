@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
-import { login, getMe } from '../api/auth'
 
 export default function Login() {
   const navigate = useNavigate()
-  const setAuth = useAuthStore((s) => s.setAuth)
+  const storeLogin = useAuthStore((s) => s.login)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -16,11 +15,7 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      const { access_token } = await login(email, password)
-      // Temporarily set token so getMe can use it
-      useAuthStore.setState({ token: access_token })
-      const user = await getMe()
-      setAuth(access_token, user)
+      await storeLogin(email, password)
       navigate('/dashboard')
     } catch {
       setError('Correo o contraseña incorrectos.')
