@@ -7,18 +7,11 @@ import { iniciarRevision, getStatus } from '../api/revision'
 export default function Revision() {
   const { tareaId } = useParams()
   const navigate = useNavigate()
-  const started = useRef(false)
+  const initialCheckDone = useRef(false)
 
   const { mutate: startRevision } = useMutation({
     mutationFn: () => iniciarRevision(tareaId),
   })
-
-  useEffect(() => {
-    if (!started.current) {
-      started.current = true
-      startRevision()
-    }
-  }, [startRevision])
 
   const { data } = useQuery({
     queryKey: ['revision-status', tareaId],
@@ -30,6 +23,19 @@ export default function Revision() {
   })
 
   const status = data?.status
+
+  useEffect(() => {
+    if (!status || initialCheckDone.current) return
+    initialCheckDone.current = true
+
+    if (status === 'completado' || status === 'con_errores') {
+      navigate(`/tareas/${tareaId}/resultados`, { replace: true })
+    } else if (status === 'pendiente') {
+      startRevision()
+    }
+    // 'en_progreso' → el polling continúa sin llamar a iniciarRevision
+  }, [status, navigate, startRevision, tareaId])
+
   const total = data?.total ?? 0
   const completadas = data?.completadas ?? 0
   const errores = data?.errores ?? 0

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import Layout from '../components/Layout'
 import { getResultados, exportarExcel } from '../api/revision'
+import { getTarea } from '../api/tareas'
 
 const NIVEL_BADGE = {
   bajo: 'bg-green-100 text-green-800',
@@ -15,6 +16,11 @@ export default function Resultados() {
   const navigate = useNavigate()
   const [sortAsc, setSortAsc] = useState(false)
   const [exporting, setExporting] = useState(false)
+
+  const { data: tarea } = useQuery({
+    queryKey: ['tarea', tareaId],
+    queryFn: () => getTarea(tareaId),
+  })
 
   const { data: resultados = [], isLoading } = useQuery({
     queryKey: ['resultados', tareaId],
@@ -40,9 +46,20 @@ export default function Resultados() {
     <Layout>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <button onClick={() => navigate(-1)} className="text-sm text-brand hover:underline mb-1 inline-block">
-            ← Volver
-          </button>
+          <div className="flex items-center gap-3 mb-1">
+            <button
+              onClick={() => navigate(tarea?.grupo_id ? `/grupos/${tarea.grupo_id}` : '/')}
+              className="text-sm text-brand hover:underline"
+            >
+              ← Volver a tareas
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="text-sm text-brand hover:underline"
+            >
+              Inicio
+            </button>
+          </div>
           <h2 className="text-2xl font-bold text-gray-900">Resultados</h2>
         </div>
         <button
