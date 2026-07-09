@@ -5,3 +5,6 @@ export const login = (email, password) =>
 
 export const getMe = () =>
   client.get('/auth/me').then((r) => r.data)
+
+export const register = (data) =>
+  client.post('/auth/register', data).then(r => r.data)

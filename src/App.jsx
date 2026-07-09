@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
+import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Grupo from './pages/Grupo'
 import CrearTarea from './pages/CrearTarea'
@@ -17,6 +18,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/" element={<Protected><Dashboard /></Protected>} />
       <Route path="/grupos/:id" element={<Protected><Grupo /></Protected>} />
       <Route path="/tareas/nueva" element={<Protected><CrearTarea /></Protected>} />
