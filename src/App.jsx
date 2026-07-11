@@ -11,6 +11,7 @@ import DetalleAlumno from './pages/DetalleAlumno'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminRoute from './components/AdminRoute'
 import AdminPanel from './pages/admin/AdminPanel'
+import Rubricas from './pages/Rubricas'
 
 function Protected({ children }) {
   return <ProtectedRoute>{children}</ProtectedRoute>
@@ -32,6 +33,7 @@ export default function App() {
       <Route path="/tareas/:tareaId/revision" element={<Protected><Revision /></Protected>} />
       <Route path="/tareas/:tareaId/resultados" element={<Protected><Resultados /></Protected>} />
       <Route path="/entregas/:entregaId/detalle" element={<Protected><DetalleAlumno /></Protected>} />
+      <Route path="/rubricas" element={<Protected><Rubricas /></Protected>} />
       <Route path="/admin" element={<Admin><AdminPanel /></Admin>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

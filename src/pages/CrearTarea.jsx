@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import Layout from '../components/Layout'
 import { createTarea } from '../api/tareas'
+import { getRubricas } from '../api/rubricas'
 
 const MODOS_IA = [
   { value: 'informativo', label: 'Informativo (no afecta calificación)' },
@@ -15,12 +16,19 @@ export default function CrearTarea() {
   const [searchParams] = useSearchParams()
   const grupoId = Number(searchParams.get('grupoId'))
 
+  const [rubricas, setRubricas] = useState([])
+  const [rubricaSeleccionada, setRubricaSeleccionada] = useState('')
+
   const [titulo, setTitulo] = useState('')
   const [criterios, setCriterios] = useState([{ nombre: '', ponderacion: '' }])
   const [iaActivo, setIaActivo] = useState(false)
   const [modoIA, setModoIA] = useState('informativo')
   const [penalizacionPct, setPenalizacionPct] = useState(10)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    getRubricas().then(r => setRubricas(r.data)).catch(() => {})
+  }, [])
 
   const mutation = useMutation({
     mutationFn: createTarea,
@@ -72,6 +80,39 @@ export default function CrearTarea() {
               className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
               placeholder="Ej: Ensayo sobre la Revolución Francesa"
             />
+          </div>
+
+          {/* Selector de rúbrica */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Usar rúbrica guardada <span className="text-gray-400 font-normal">(opcional)</span>
+            </label>
+            <div className="flex gap-2">
+              <select
+                value={rubricaSeleccionada}
+                onChange={(e) => setRubricaSeleccionada(e.target.value)}
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand"
+              >
+                <option value="">— Selecciona una rúbrica —</option>
+                {rubricas.map(r => (
+                  <option key={r.id} value={r.id}>{r.nombre}</option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => {
+                  const r = rubricas.find(x => x.id === parseInt(rubricaSeleccionada))
+                  if (r) setCriterios(r.criterios.map(c => ({ nombre: c.nombre, ponderacion: String(c.ponderacion) })))
+                }}
+                disabled={!rubricaSeleccionada}
+                className="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium disabled:opacity-40 hover:bg-brand-dark transition-colors"
+              >
+                Autocompletar
+              </button>
+              <a href="/rubricas" className="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors whitespace-nowrap">
+                Gestionar rúbricas
+              </a>
+            </div>
           </div>
 
           {/* Criterios */}
