@@ -88,7 +88,7 @@ export default function Dashboard() {
     getMisStats()
       .then((res) => setMisStats(res.data))
       .catch(() => setMisStats({ total_tareas: 0, total_entregas: 0, tokens_consumidos: 0, costo_estimado: 0 }))
-  }, [user?.role])
+  }, [user])
 
   const { data: grupos = [], isLoading } = useQuery({
     queryKey: ['grupos'],
