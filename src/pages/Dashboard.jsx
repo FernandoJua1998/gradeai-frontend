@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import Layout from '../components/Layout'
 import { getGrupos, createGrupo } from '../api/grupos'
 import { getMisStats } from '../api/admin'
+import useAuthStore from '../store/authStore'
 
 function GrupoCard({ grupo, onClick }) {
   return (
@@ -80,12 +81,14 @@ export default function Dashboard() {
   const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
   const [misStats, setMisStats] = useState(null)
+  const { user } = useAuthStore()
 
   useEffect(() => {
+    if (user?.role !== 'admin') return
     getMisStats()
       .then((res) => setMisStats(res.data))
       .catch(() => setMisStats({ total_tareas: 0, total_entregas: 0, tokens_consumidos: 0, costo_estimado: 0 }))
-  }, [])
+  }, [user?.role])
 
   const { data: grupos = [], isLoading } = useQuery({
     queryKey: ['grupos'],
@@ -102,19 +105,21 @@ export default function Dashboard() {
 
   return (
     <Layout>
-      {/* Mis estadísticas */}
-      <div className="mb-8">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Mis estadísticas</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MisStatsCard label="Total tareas" value={misStats?.total_tareas ?? 0} />
-          <MisStatsCard label="Total entregas" value={misStats?.total_entregas ?? 0} />
-          <MisStatsCard label="Tokens consumidos" value={misStats?.tokens_consumidos != null ? misStats.tokens_consumidos.toLocaleString() : 0} />
-          <MisStatsCard
-            label="Costo estimado (USD)"
-            value={misStats?.costo_estimado != null ? `$${Number(misStats.costo_estimado).toFixed(6)}` : '$0.000000'}
-          />
+      {/* Mis estadísticas — solo admins */}
+      {user?.role === 'admin' && (
+        <div className="mb-8">
+          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Mis estadísticas</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <MisStatsCard label="Total tareas" value={misStats?.total_tareas ?? 0} />
+            <MisStatsCard label="Total entregas" value={misStats?.total_entregas ?? 0} />
+            <MisStatsCard label="Tokens consumidos" value={misStats?.tokens_consumidos != null ? misStats.tokens_consumidos.toLocaleString() : 0} />
+            <MisStatsCard
+              label="Costo estimado (USD)"
+              value={misStats?.costo_estimado != null ? `$${Number(misStats.costo_estimado).toFixed(6)}` : '$0.000000'}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="flex items-center justify-between mb-6">
         <div>
