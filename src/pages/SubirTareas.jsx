@@ -36,6 +36,7 @@ export default function SubirTareas() {
   const removeFile = (name) => setArchivos(prev => prev.filter(f => f.name !== name))
 
   const handleSubir = async () => {
+    if (subiendo) return  // prevenir doble click
     if (archivos.length === 0) return
     setSubiendo(true)
     setError('')
