@@ -1,0 +1,26 @@
+# Dependencias
+node_modules/
+
+# Build
+dist/
+dist-ssr/
+
+# Configuracion local (.env.example si se versiona)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache de herramientas
+.vite/
+.eslintcache
+
+# SO / editores
+.DS_Store
+.idea/
+.vscode/
